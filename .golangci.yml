@@ -31,4 +31,22 @@ linters:
     - typecheck
     - gocritic
     - unused
+  settings:
+    gocritic:
+      disabled-checks:
+        # we don't want to enforce space before the comment text
+        - commentFormatting
+
+formatters:
+  enable:
     - gci
+    - gofmt
+  settings:
+    gci:
+      sections:
+        - standard
+        - prefix(github.com/nuclio/nuclio/)
+        - default
+        - blank
+        - dot
+      custom-order: true

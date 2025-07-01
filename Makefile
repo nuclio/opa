@@ -52,7 +52,7 @@ clean:
 	go clean ./...
 	@echo Done.
 
-GOLANGCI_LINT_VERSION := v1.64.6
+GOLANGCI_LINT_VERSION := 1.64.6
 GOLANGCI_LINT_BIN := $(GOPATH)/bin/golangci-lint
 GOLANGCI_LINT_INSTALL_COMMAND := GOBIN=$(GOPATH)/bin go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
 
@@ -62,7 +62,7 @@ ensure-golangci-linter:
 		echo "golangci-lint not found. Installing..."; \
 		$(GOLANGCI_LINT_INSTALL_COMMAND); \
 	else \
-		installed_version=$$($(GOLANGCI_LINT_BIN) version | awk '/version/ {print $$4}'); \
+		installed_version=$$($(GOLANGCI_LINT_BIN) version | awk '/version/ {print $$4}' | sed 's/^v//'); \
 		if [ "$$installed_version" != "$(GOLANGCI_LINT_VERSION)" ]; then \
 			echo "golangci-lint version mismatch ($$installed_version != $(GOLANGCI_LINT_VERSION)). Reinstalling..."; \
 			$(GOLANGCI_LINT_INSTALL_COMMAND); \

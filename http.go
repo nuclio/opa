@@ -110,7 +110,8 @@ func (c *HTTPClient) QueryPermissionsMultiResources(ctx context.Context,
 	}
 
 	if c.verbose {
-		c.logger.InfoWith("Sending request to OPA",
+		c.logger.InfoWithCtx(ctx,
+			"Sending request to OPA",
 			"requestBody", string(requestBody),
 			"requestURL", requestURL)
 	}
@@ -134,7 +135,8 @@ func (c *HTTPClient) QueryPermissionsMultiResources(ctx context.Context,
 		})
 	if err != nil {
 		if c.verbose {
-			c.logger.ErrorWith("Failed to send HTTP request to OPA",
+			c.logger.ErrorWithCtx(ctx,
+				"Failed to send HTTP request to OPA",
 				"err", errors.GetErrorStackString(err, 10))
 		}
 		return nil, errors.Wrap(err, "Failed to send HTTP request to OPA")
