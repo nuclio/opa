@@ -52,9 +52,9 @@ clean:
 	go clean ./...
 	@echo Done.
 
-GOLANGCI_LINT_VERSION := 1.64.6
+GOLANGCI_LINT_VERSION := 2.2.0
 GOLANGCI_LINT_BIN := $(GOPATH)/bin/golangci-lint
-GOLANGCI_LINT_INSTALL_COMMAND := GOBIN=$(GOPATH)/bin go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
+GOLANGCI_LINT_INSTALL_COMMAND := GOBIN=$(GOPATH)/bin go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v$(GOLANGCI_LINT_VERSION)
 
 .PHONY: ensure-golangci-linter
 ensure-golangci-linter:
