@@ -48,7 +48,9 @@ jobs:
       run: make test-coverage
 
     - name: Lint
-      run: make lint
+      uses: golangci/golangci-lint-action@v8
+      with:
+        version: v2.2.0
 
     - name: Upload coverage reports
       uses: actions/upload-artifact@v4
