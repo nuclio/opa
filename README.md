@@ -15,7 +15,7 @@ A Go client library for Open Policy Agent (OPA) with support for HTTP-based poli
 ## Installation
 
 ```bash
-go get github.com/nuclio/opa
+go get github.com/nuclio/opa-client
 ```
 
 ## Quick Start
@@ -28,7 +28,7 @@ import (
     "time"
     
     "github.com/nuclio/logger"
-    "github.com/nuclio/opa"
+    "github.com/nuclio/opa-client"
 )
 
 func main() {

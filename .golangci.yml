@@ -39,7 +39,9 @@ linters:
       rules:
         - name: errorf
           disabled: true
-
+  exclusions:
+    paths:
+      - ".*go/pkg/mod/.*"
 formatters:
   enable:
     - gci
@@ -48,7 +50,7 @@ formatters:
     gci:
       sections:
         - standard
-        - prefix(github.com/nuclio/opa/)
+        - prefix(github.com/nuclio/opa-client/)
         - default
         - blank
         - dot

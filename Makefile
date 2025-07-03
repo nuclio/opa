@@ -20,7 +20,7 @@ fmt: ensure-golangci-linter
 .PHONY: lint
 lint: modules ensure-golangci-linter
 	@echo Linting...
-	$(GOPATH)/bin/golangci-lint run -v
+	$(GOPATH)/bin/golangci-lint run -v ./...
 	@echo Done.
 
 .PHONY: test

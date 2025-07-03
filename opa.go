@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Package opa provides a Go client library for Open Policy Agent (OPA) with support for HTTP-based policy queries.
+// package opaclient provides a Go client library for Open Policy Agent (OPA) with support for HTTP-based policy queries.
 //
 // The package supports multiple client types:
 //   - HTTPClient: Production client for communicating with OPA over HTTP
@@ -34,7 +34,7 @@ limitations under the License.
 //	allowed, err := client.QueryPermissions("resource1", opa.ActionRead, &opa.PermissionOptions{
 //		MemberIds: []string{"user123"},
 //	})
-package opa
+package opaclient
 
 import (
 	"context"
