@@ -38,11 +38,6 @@ jobs:
       with:
         go-version: ${{ matrix.go-version }}
 
-    - name: Set up GOPATH
-      run: |
-        echo "GOPATH=${{ github.workspace }}/go" >> $GITHUB_ENV
-        echo "${{ github.workspace }}/go/bin" >> $GITHUB_PATH
-
     - name: Download dependencies
       run: make modules
 
