@@ -1,4 +1,4 @@
-module github.com/nuclio/opa
+module github.com/nuclio/opa-client
 
 go 1.23.8
 

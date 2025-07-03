@@ -38,11 +38,6 @@ jobs:
       with:
         go-version: ${{ matrix.go-version }}
 
-    - name: Set up GOPATH
-      run: |
-        echo "GOPATH=${{ github.workspace }}/go" >> $GITHUB_ENV
-        echo "${{ github.workspace }}/go/bin" >> $GITHUB_PATH
-
     - name: Download dependencies
       run: make modules
 
@@ -53,7 +48,9 @@ jobs:
       run: make test-coverage
 
     - name: Lint
-      run: make lint
+      uses: golangci/golangci-lint-action@v8
+      with:
+        version: v2.2.0
 
     - name: Upload coverage reports
       uses: actions/upload-artifact@v4

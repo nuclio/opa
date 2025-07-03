@@ -18,25 +18,30 @@ run:
   timeout: 5m
 
 linters:
+  default: none
   enable:
+    - errcheck
     - goconst
-    - gofmt
-    - gosimple
+    - gocritic
+    - govet
     - ineffassign
     - misspell
+    - revive
     - staticcheck
     - unconvert
-    - errcheck
-    - govet
-    - typecheck
-    - gocritic
     - unused
   settings:
     gocritic:
       disabled-checks:
         # we don't want to enforce space before the comment text
         - commentFormatting
-
+    revive:
+      rules:
+        - name: errorf
+          disabled: true
+  exclusions:
+    paths:
+      - ".*go/pkg/mod/.*"
 formatters:
   enable:
     - gci
@@ -45,7 +50,7 @@ formatters:
     gci:
       sections:
         - standard
-        - prefix(github.com/nuclio/nuclio/)
+        - prefix(github.com/nuclio/opa-client/)
         - default
         - blank
         - dot

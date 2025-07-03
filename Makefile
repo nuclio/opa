@@ -20,13 +20,13 @@ fmt: ensure-golangci-linter
 .PHONY: lint
 lint: modules ensure-golangci-linter
 	@echo Linting...
-	$(GOPATH)/bin/golangci-lint run -v
+	$(GOPATH)/bin/golangci-lint run -v ./...
 	@echo Done.
 
 .PHONY: test
 test:
 	@echo Running tests...
-	go test -v -race -coverprofile=coverage.out ./...
+	go test -v -tags=test_unit -race -coverprofile=coverage.out $(go list ./... | grep '^github.com/nuclio/')
 	@echo Done.
 
 .PHONY: test-coverage
@@ -36,14 +36,8 @@ test-coverage: test
 	@echo Coverage report generated: coverage.html
 
 .PHONY: modules
-modules: ensure-gopath
+modules:
 	@go mod download
-
-.PHONY: ensure-gopath
-ensure-gopath:
-ifndef GOPATH
-	$(error GOPATH must be set)
-endif
 
 .PHONY: clean
 clean:
@@ -52,9 +46,9 @@ clean:
 	go clean ./...
 	@echo Done.
 
-GOLANGCI_LINT_VERSION := 1.64.6
+GOLANGCI_LINT_VERSION := 2.2.0
 GOLANGCI_LINT_BIN := $(GOPATH)/bin/golangci-lint
-GOLANGCI_LINT_INSTALL_COMMAND := GOBIN=$(GOPATH)/bin go install github.com/golangci/golangci-lint/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
+GOLANGCI_LINT_INSTALL_COMMAND := GOBIN=$(GOPATH)/bin go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v$(GOLANGCI_LINT_VERSION)
 
 .PHONY: ensure-golangci-linter
 ensure-golangci-linter:

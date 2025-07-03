@@ -1,3 +1,5 @@
+//go:build test_unit
+
 /*
 Copyright 2025 The Nuclio Authors.
 
@@ -14,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package opa
+package opaclient
 
 import (
 	"context"
