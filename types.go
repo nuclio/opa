@@ -16,6 +16,8 @@ limitations under the License.
 
 package opa
 
+import "time"
+
 type ClientKind string
 
 const (
@@ -24,7 +26,7 @@ const (
 	ClientKindMock ClientKind = "mock"
 
 	DefaultClientKind     = ClientKindNop
-	DefaultRequestTimeOut = 10
+	DefaultRequestTimeOut = 10 * time.Second
 )
 
 type Config struct {

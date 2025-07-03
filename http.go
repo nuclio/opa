@@ -52,7 +52,7 @@ func NewHTTPClient(parentLogger logger.Logger,
 
 	// enrich request timeout with a default value if not set
 	if requestTimeout == 0 {
-		requestTimeout = DefaultRequestTimeOut * time.Second
+		requestTimeout = DefaultRequestTimeOut
 	}
 
 	transport := &http.Transport{}
