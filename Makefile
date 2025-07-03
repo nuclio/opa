@@ -26,7 +26,7 @@ lint: modules ensure-golangci-linter
 .PHONY: test
 test:
 	@echo Running tests...
-	go test -v -tags=test_unit -race -coverprofile=coverage.out ./...
+	go test -v -tags=test_unit -race -coverprofile=coverage.out $(go list ./... | grep '^github.com/nuclio/')
 	@echo Done.
 
 .PHONY: test-coverage
