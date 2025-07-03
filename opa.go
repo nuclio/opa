@@ -43,7 +43,7 @@ import (
 // Client represents an OPA client that can query permissions.
 type Client interface {
 	// QueryPermissions queries permission for a single resource.
-	QueryPermissions(string, Action, *PermissionOptions) (bool, error)
+	QueryPermissions(context.Context, string, Action, *PermissionOptions) (bool, error)
 
 	// QueryPermissionsMultiResources queries permissions for multiple resources at once.
 	// Returns a slice of booleans where each index corresponds to the resource at the same index.

@@ -18,14 +18,15 @@ package opa
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/nuclio/errors"
 	"github.com/nuclio/logger"
-	"github.com/nuclio/nuclio/pkg/common"
 )
 
 type HTTPClient struct {
@@ -45,7 +46,25 @@ func NewHTTPClient(parentLogger logger.Logger,
 	permissionFilterPath string,
 	requestTimeout time.Duration,
 	verbose bool,
-	overrideHeaderValue string) *HTTPClient {
+	overrideHeaderValue string,
+	skipTLSVerify bool,
+) *HTTPClient {
+
+	// enrich request timeout with a default value if not set
+	if requestTimeout == 0 {
+		requestTimeout = DefaultRequestTimeOut * time.Second
+	}
+
+	transport := &http.Transport{}
+
+	// Enable this only for development purposes
+	if skipTLSVerify {
+		transport.TLSClientConfig = &tls.Config{
+			MinVersion:         tls.VersionTLS13,
+			InsecureSkipVerify: true,
+		}
+	}
+
 	newClient := HTTPClient{
 		logger:               parentLogger.GetChild("opa"),
 		address:              address,
@@ -56,13 +75,7 @@ func NewHTTPClient(parentLogger logger.Logger,
 		overrideHeaderValue:  overrideHeaderValue,
 		httpClient: &http.Client{
 			Timeout:   requestTimeout,
-			Transport: &http.Transport{
-				// Enable in case you need for development
-				//TLSClientConfig: &tls.Config{
-				//	MinVersion:         tls.VersionTLS13,
-				//	InsecureSkipVerify: true,
-				// },
-			},
+			Transport: transport,
 		},
 	}
 	return &newClient
@@ -116,10 +129,11 @@ func (c *HTTPClient) QueryPermissionsMultiResources(ctx context.Context,
 			"requestURL", requestURL)
 	}
 	var responseBody []byte
-	err = common.RetryUntilSuccessful(6*time.Second,
+	if err := retryUntilSuccessful(6*time.Second,
 		1*time.Second,
 		func() bool {
-			responseBody, _, err = common.SendHTTPRequest(c.httpClient,
+			responseBody, _, err = sendHTTPRequest(ctx,
+				c.httpClient,
 				http.MethodPost,
 				requestURL,
 				requestBody,
@@ -127,13 +141,12 @@ func (c *HTTPClient) QueryPermissionsMultiResources(ctx context.Context,
 				[]*http.Cookie{},
 				http.StatusOK)
 			if err != nil {
-				c.logger.WarnWith("Failed to send HTTP request to OPA, retrying",
+				c.logger.WarnWithCtx(ctx, "Failed to send HTTP request to OPA, retrying",
 					"err", err.Error())
 				return false
 			}
 			return true
-		})
-	if err != nil {
+		}); err != nil {
 		if c.verbose {
 			c.logger.ErrorWithCtx(ctx,
 				"Failed to send HTTP request to OPA",
@@ -143,7 +156,7 @@ func (c *HTTPClient) QueryPermissionsMultiResources(ctx context.Context,
 	}
 
 	if c.verbose {
-		c.logger.InfoWith("Received response from OPA",
+		c.logger.InfoWithCtx(ctx, "Received response from OPA",
 			"responseBody", string(responseBody))
 	}
 
@@ -153,19 +166,20 @@ func (c *HTTPClient) QueryPermissionsMultiResources(ctx context.Context,
 	}
 
 	if c.verbose {
-		c.logger.InfoWith("Successfully unmarshalled permission filter response",
+		c.logger.InfoWithCtx(ctx, "Successfully unmarshalled permission filter response",
 			"permissionFilterResponse", permissionFilterResponse)
 	}
 
 	for resourceIdx, resource := range resources {
-		if common.StringInSlice(resource, permissionFilterResponse.Result) {
+		if slices.Contains(permissionFilterResponse.Result, resource) {
 			results[resourceIdx] = true
 		}
 	}
 	return results, nil
 }
 
-func (c *HTTPClient) QueryPermissions(resource string,
+func (c *HTTPClient) QueryPermissions(ctx context.Context,
+	resource string,
 	action Action,
 	permissionOptions *PermissionOptions) (bool, error) {
 
@@ -192,15 +206,16 @@ func (c *HTTPClient) QueryPermissions(resource string,
 	}
 
 	if c.verbose {
-		c.logger.InfoWith("Sending request to OPA",
+		c.logger.InfoWithCtx(ctx, "Sending request to OPA",
 			"requestBody", string(requestBody),
 			"requestURL", requestURL)
 	}
 	var responseBody []byte
-	err = common.RetryUntilSuccessful(6*time.Second,
+	if err := retryUntilSuccessful(6*time.Second,
 		1*time.Second,
 		func() bool {
-			responseBody, _, err = common.SendHTTPRequest(c.httpClient,
+			responseBody, _, err = sendHTTPRequest(ctx,
+				c.httpClient,
 				http.MethodPost,
 				requestURL,
 				requestBody,
@@ -208,22 +223,21 @@ func (c *HTTPClient) QueryPermissions(resource string,
 				[]*http.Cookie{},
 				http.StatusOK)
 			if err != nil {
-				c.logger.WarnWith("Failed to send HTTP request to OPA, retrying",
+				c.logger.WarnWithCtx(ctx, "Failed to send HTTP request to OPA, retrying",
 					"err", err.Error())
 				return false
 			}
 			return true
-		})
-	if err != nil {
+		}); err != nil {
 		if c.verbose {
-			c.logger.ErrorWith("Failed to send HTTP request to OPA",
+			c.logger.ErrorWithCtx(ctx, "Failed to send HTTP request to OPA",
 				"err", errors.GetErrorStackString(err, 10))
 		}
 		return false, errors.Wrap(err, "Failed to send HTTP request to OPA")
 	}
 
 	if c.verbose {
-		c.logger.InfoWith("Received response from OPA",
+		c.logger.InfoWithCtx(ctx, "Received response from OPA",
 			"responseBody", string(responseBody))
 	}
 
@@ -233,7 +247,7 @@ func (c *HTTPClient) QueryPermissions(resource string,
 	}
 
 	if c.verbose {
-		c.logger.InfoWith("Successfully unmarshalled permission response",
+		c.logger.InfoWithCtx(ctx, "Successfully unmarshalled permission response",
 			"permissionResponse", permissionResponse)
 	}
 
