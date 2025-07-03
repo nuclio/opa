@@ -26,7 +26,8 @@ type MockClient struct {
 	mock.Mock
 }
 
-func (mc *MockClient) QueryPermissions(resource string,
+func (mc *MockClient) QueryPermissions(ctx context.Context,
+	resource string,
 	action Action,
 	permissionOptions *PermissionOptions) (bool, error) {
 	args := mc.Called(resource, action, permissionOptions)

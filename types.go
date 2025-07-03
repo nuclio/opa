@@ -16,6 +16,8 @@ limitations under the License.
 
 package opa
 
+import "time"
+
 type ClientKind string
 
 const (
@@ -24,7 +26,7 @@ const (
 	ClientKindMock ClientKind = "mock"
 
 	DefaultClientKind     = ClientKindNop
-	DefaultRequestTimeOut = 10
+	DefaultRequestTimeOut = 10 * time.Second
 )
 
 type Config struct {
@@ -49,6 +51,9 @@ type Config struct {
 
 	// the header value for bypassing OPA if needed
 	OverrideHeaderValue string `json:"overrideHeaderValue,omitempty"`
+
+	// SkipTLSVerify indicates whether to skip TLS verification for the OPA server
+	SkipTLSVerify bool `json:"skipTLSVerify,omitempty"`
 }
 
 type PermissionOptions struct {

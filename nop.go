@@ -51,7 +51,7 @@ func (c *NopClient) QueryPermissionsMultiResources(ctx context.Context,
 	return results, nil
 }
 
-func (c *NopClient) QueryPermissions(resource string, action Action, permissionOptions *PermissionOptions) (bool, error) {
+func (c *NopClient) QueryPermissions(ctx context.Context, resource string, action Action, permissionOptions *PermissionOptions) (bool, error) {
 	if c.verbose {
 		c.logger.InfoWith("Skipping permission query",
 			"resource", resource,

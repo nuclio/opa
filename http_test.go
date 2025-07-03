@@ -32,6 +32,7 @@ import (
 type HTTPClientTestSuite struct {
 	suite.Suite
 	logger         logger.Logger
+	ctx            context.Context
 	testHTTPServer *httptest.Server
 	httpClient     *HTTPClient
 }
@@ -40,6 +41,8 @@ func (suite *HTTPClientTestSuite) SetupTest() {
 	var err error
 	suite.logger, err = nucliozap.NewNuclioZapTest("opa-test")
 	suite.Require().NoError(err)
+
+	suite.ctx = context.Background()
 
 	allowPath := "/v1/data/authz/allow"
 	filterPath := "/v1/data/authz/filter_allowed"
@@ -93,6 +96,7 @@ func (suite *HTTPClientTestSuite) SetupTest() {
 		5*time.Second,
 		true, // Enable verbose logging for tests
 		"test-override-value",
+		false,
 	)
 }
 
@@ -103,6 +107,7 @@ func (suite *HTTPClientTestSuite) TearDownTest() {
 func (suite *HTTPClientTestSuite) TestQueryPermissions_Allow() {
 	// Test resource that should be allowed
 	allowed, err := suite.httpClient.QueryPermissions(
+		suite.ctx,
 		"allow-resource",
 		ActionRead,
 		&PermissionOptions{
@@ -117,6 +122,7 @@ func (suite *HTTPClientTestSuite) TestQueryPermissions_Allow() {
 func (suite *HTTPClientTestSuite) TestQueryPermissions_Deny() {
 	// Test resource that should be denied
 	allowed, err := suite.httpClient.QueryPermissions(
+		suite.ctx,
 		"deny-resource",
 		ActionRead,
 		&PermissionOptions{
@@ -131,6 +137,7 @@ func (suite *HTTPClientTestSuite) TestQueryPermissions_Deny() {
 func (suite *HTTPClientTestSuite) TestQueryPermissions_WithOverride() {
 	// Test with override header value
 	allowed, err := suite.httpClient.QueryPermissions(
+		suite.ctx,
 		"deny-resource", // Would normally be denied
 		ActionRead,
 		&PermissionOptions{
