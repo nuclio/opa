@@ -36,14 +36,8 @@ test-coverage: test
 	@echo Coverage report generated: coverage.html
 
 .PHONY: modules
-modules: ensure-gopath
+modules:
 	@go mod download
-
-.PHONY: ensure-gopath
-ensure-gopath:
-ifndef GOPATH
-	$(error GOPATH must be set)
-endif
 
 .PHONY: clean
 clean:
